@@ -1,66 +1,59 @@
-import logging
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler, ContextTypes
+import asyncio
+from telegram import Update, Bot, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import Application, CommandHandler, ContextTypes, CallbackQueryHandler
 
-API_KEY = '7369038732:AAG1THLHOc6olTeED7_dGne2hIrSvDeOB8M'  # Bot API anahtarınızı buraya girin
+TOKEN = '7369038732:AAG1THLHOc6olTeED7_dGne2hIrSvDeOB8M'
+REFERRAL_REWARD = 10  # MNG cinsinden ödül
+balance = {}  # Kullanıcı bakiyelerini tutar
 
-# Logging ayarları
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.INFO
-)
-
-logger = logging.getLogger(__name__)
-
-# Kullanıcıların bakiyelerini tutmak için bir sözlük
-user_balances = {}
-
-# Başlatma komutu
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user_id = update.effective_user.id
-    if user_id not in user_balances:
-        user_balances[user_id] = 0  # Yeni kullanıcı için başlangıç bakiyesi 0
+    user_id = update.message.from_user.id
+    if user_id not in balance:
+        balance[user_id] = 0
 
     keyboard = [
-        [InlineKeyboardButton("Görev Yap", callback_data='gorev_yap')],
-        [InlineKeyboardButton("Cüzdana Para Aktar", callback_data='para_aktar')],
-        [InlineKeyboardButton("Bakiye Görüntüle", callback_data='bakiye_goster')]
+        [InlineKeyboardButton("Hesap Bakiyesi", callback_data='balance')],
+        [InlineKeyboardButton("Referans Linki", callback_data='referral')],
     ]
-    
+
     reply_markup = InlineKeyboardMarkup(keyboard)
-    
-    await update.message.reply_text("Hoşgeldiniz! Lütfen bir işlem seçin:", reply_markup=reply_markup)
+    await update.message.reply_text('Merhaba! MNG Botuna Hoşgeldiniz. Seçenekler:', reply_markup=reply_markup)
 
-# Buton komutları için geri çağırma fonksiyonu
-async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
-    await query.answer()
-    
     user_id = query.from_user.id
-    
-    if query.data == 'gorev_yap':
-        user_balances[user_id] += 10  # Görev başına 10 MNG ekle
-        await query.edit_message_text(text=f"Görevi tamamladınız! Mevcut bakiyeniz: {user_balances[user_id]} MNG")
-    
-    elif query.data == 'para_aktar':
-        if user_balances[user_id] >= 100:
-            user_balances[user_id] -= 100
-            await query.edit_message_text(text="Başarıyla 100 MNG cüzdanınıza aktarıldı!")
+    await query.answer()
+
+    if query.data == 'balance':
+        await query.edit_message_text(text=f"Bakiyeniz: {balance[user_id]} MNG")
+    elif query.data == 'referral':
+        referral_link = f"http://t.me/YourBotUsername?start={user_id}"
+        await query.edit_message_text(text=f"Referans linkiniz: {referral_link}")
+
+async def referral_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    referral_id = update.message.text.split()[1] if len(update.message.text.split()) > 1 else None
+    if referral_id and referral_id.isdigit():
+        referral_id = int(referral_id)
+        if referral_id in balance:
+            balance[referral_id] += REFERRAL_REWARD
+            await update.message.reply_text(f"Referans için teşekkürler! {REFERRAL_REWARD} MNG kazandınız.")
         else:
-            await query.edit_message_text(text="Yetersiz bakiye. En az 100 MNG gerekiyor.")
-    
-    elif query.data == 'bakiye_goster':
-        await query.edit_message_text(text=f"Mevcut bakiyeniz: {user_balances[user_id]} MNG")
+            await update.message.reply_text("Geçersiz referans kodu.")
+    else:
+        await update.message.reply_text("Referans kodu bulunamadı.")
 
-# Ana fonksiyon
 async def main():
-    application = ApplicationBuilder().token(API_KEY).build()
-    
-    application.add_handler(CommandHandler('start', start))
-    application.add_handler(CallbackQueryHandler(button))
-    
-    await application.run_polling()
+    bot = Bot(token=TOKEN)
+    application = Application.builder().token(TOKEN).build()
 
-if __name__ == '__main__':
-    import asyncio
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(CallbackQueryHandler(button_handler))
+    application.add_handler(CommandHandler("referral", referral_handler))
+
+    await application.initialize()
+    await application.start()
+    await application.updater.start_polling()
+    await application.idle()
+
+if __name__ == "__main__":
     asyncio.run(main())
