@@ -2,8 +2,9 @@ import nest_asyncio
 nest_asyncio.apply()
 
 import asyncio
-from telegram import Update, ParseMode, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder,Application, CommandHandler, ContextTypes, CallbackQueryHandler, MessageHandler, filters
+from telegram.constants import ParseMode
 application = ApplicationBuilder().token("7369038732:AAG1THLHOc6olTeED7_dGne2hIrSvDeOB8M").build()
 
 # Kullanıcıların bakiyelerini saklamak için basit bir sözlük
