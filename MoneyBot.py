@@ -3,7 +3,7 @@ nest_asyncio.apply()
 
 import asyncio
 from telegram import Update
-from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, Application, MessageHandler, filters
 
 # Kullanıcıların bakiyelerini saklamak için basit bir sözlük
 user_balances = {}
@@ -49,7 +49,19 @@ async def withdraw(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(f"{amount} MNG başarıyla cüzdanınıza aktarıldı.")
     else:
         await update.message.reply_text("Yetersiz bakiye.")
+# Diğer komutlarınız burada olacak...
 
+# Bilinmeyen komutlar için fallback işleyicisi
+async def unknown_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await update.message.reply_text("Üzgünüm, bu komutu tanımıyorum. Geçerli komutlar için /help yazabilirsiniz.")
+
+# Bilinmeyen mesajlar için fallback işleyicisi
+unknown_handler = MessageHandler(filters.COMMAND, unknown_command)
+
+# Fallback işleyicisini uygulamaya ekleyin
+application.add_handler(unknown_handler)
+
+# Diğer komutlarınızı ve uygulamanızın başlatılmasını ekleyin...
 # Botu başlatan ana fonksiyon
 async def main():
     application = ApplicationBuilder().token("7369038732:AAG1THLHOc6olTeED7_dGne2hIrSvDeOB8M").build()
