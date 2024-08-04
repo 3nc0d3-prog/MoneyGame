@@ -2,13 +2,34 @@ import nest_asyncio
 nest_asyncio.apply()
 
 import asyncio
-from telegram import Update, ParseMode
-from telegram.ext import ApplicationBuilder,Application, CommandHandler, ContextTypes, MessageHandler, filters
+from telegram import Update, ParseMode, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import ApplicationBuilder,Application, CommandHandler, ContextTypes, CallbackQueryHandler, MessageHandler, filters
 application = ApplicationBuilder().token("7369038732:AAG1THLHOc6olTeED7_dGne2hIrSvDeOB8M").build()
 
 # Kullanıcıların bakiyelerini saklamak için basit bir sözlük
 user_balances = {}
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    keyboard = [
+        [InlineKeyboardButton("Bakiye", callback_data='balance')],
+        [InlineKeyboardButton("Referans", callback_data='refer')],
+        [InlineKeyboardButton("Kayıt", callback_data='register')],
+        [InlineKeyboardButton("Para Çek", callback_data='withdraw')]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    await update.message.reply_text('Merhaba! Lütfen bir seçenek belirleyin:', reply_markup=reply_markup)
 
+async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+
+    if query.data == 'balance':
+        await query.edit_message_text(text="Mevcut bakiyeniz: 100 MNG")
+    elif query.data == 'refer':
+        await query.edit_message_text(text="Referans kodunuz: ABC123")
+    elif query.data == 'register':
+        await query.edit_message_text(text="Başarıyla kayıt oldunuz!")
+    elif query.data == 'withdraw':
+        await query.edit_message_text(text="Para çekme işlemi başlatıldı. Lütfen talimatları takip edin.")
 # Başlangıç komutu
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.message.from_user.id
@@ -96,7 +117,8 @@ async def main():
     application.add_handler(CommandHandler("refer", refer))
     application.add_handler(CommandHandler("register", register))
     application.add_handler(CommandHandler("withdraw", withdraw))
- # Botu başlat
+application.add_handler(CallbackQueryHandler(button))
+    # Botu başlat
     await application.run_polling()
 if __name__ == '__main__':
     import asyncio
