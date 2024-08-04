@@ -97,7 +97,17 @@ async def register(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def withdraw(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # Para çekme işlemi
     await update.message.reply_text("Para çekme işlemi başlatıldı. Lütfen talimatları takip edin.")
-# Diğer komutlarınız burada olacak...
+
+# Botu başlatan ana fonksiyon
+async def main():
+    # Komutları ekle
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(CommandHandler("balance", balance))
+    application.add_handler(CommandHandler("refer", refer))
+    application.add_handler(CommandHandler("register", register))
+    application.add_handler(CommandHandler("withdraw", withdraw))
+    application.add_handler(CallbackQueryHandler(button))
+ # Diğer komutlarınız burada olacak...
 
 # Bilinmeyen komutlar için fallback işleyicisi
 async def unknown_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -110,16 +120,6 @@ unknown_handler = MessageHandler(filters.COMMAND, unknown_command)
 application.add_handler(unknown_handler)
 # Diğer komutlarınızı ve uygulamanızın başlatılmasını ekleyin...
    
-# Botu başlatan ana fonksiyon
-async def main():
-    # Komutları ekle
-    application.add_handler(CommandHandler("start", start))
-    application.add_handler(CommandHandler("balance", balance))
-    application.add_handler(CommandHandler("refer", refer))
-    application.add_handler(CommandHandler("register", register))
-    application.add_handler(CommandHandler("withdraw", withdraw))
-    application.add_handler(CallbackQueryHandler(button))
- 
     # Botu başlat
     await application.run_polling()
 
