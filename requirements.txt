@@ -1,2 +1,3 @@
 python-telegram-bot==20.2
 nest-asyncio
+pip==24.2
