@@ -98,20 +98,15 @@ async def withdraw(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # Para çekme işlemi
     await update.message.reply_text("Para çekme işlemi başlatıldı. Lütfen talimatları takip edin.")
 
-# Botu başlatan ana fonksiyon
-async def main():
-   # Diğer komutlarınız burada olacak...
-
 # Bilinmeyen komutlar için fallback işleyicisi
 async def unknown_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text("Üzgünüm, bu komutu tanımıyorum. Geçerli komutlar için /help yazabilirsiniz.")
 
-# Bilinmeyen mesajlar için fallback işleyicisi
-unknown_handler = MessageHandler(filters.COMMAND, unknown_command)
-
-# Fallback işleyicisini uygulamaya ekleyin
-application.add_handler(unknown_handler)
-# Diğer komutlarınızı ve uygulamanızın başlatılmasını ekleyin...
+# Botu başlatan ana fonksiyon
+async def main():
+    # Fallback işleyicisini uygulamaya ekleyin
+    unknown_handler = MessageHandler(filters.COMMAND, unknown_command)
+    application.add_handler(unknown_handler)
 
     # Komutları ekle
     application.add_handler(CommandHandler("start", start))
@@ -120,10 +115,11 @@ application.add_handler(unknown_handler)
     application.add_handler(CommandHandler("register", register))
     application.add_handler(CommandHandler("withdraw", withdraw))
     application.add_handler(CallbackQueryHandler(button))
- 
+
     # Botu başlat
     await application.run_polling()
 
 if __name__ == '__main__':
-    import asyncio
+    import nest_asyncio
+    nest_asyncio.apply()
     asyncio.run(main())
