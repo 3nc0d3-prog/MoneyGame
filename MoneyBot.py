@@ -117,7 +117,7 @@ async def main():
     application.add_handler(CommandHandler("refer", refer))
     application.add_handler(CommandHandler("register", register))
     application.add_handler(CommandHandler("withdraw", withdraw))
-application.add_handler(CallbackQueryHandler(button))
+    application.add_handler(CallbackQueryHandler(button))
     # Botu başlat
     await application.run_polling()
 if __name__ == '__main__':
