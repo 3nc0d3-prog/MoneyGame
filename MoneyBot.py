@@ -76,5 +76,6 @@ application.add_handler(unknown_handler)
     # Botu başlat
     await application.run_polling()
 
-if __name__ == "__main__":
+if __name__ == '__main__':
+    import asyncio
     asyncio.run(main())
