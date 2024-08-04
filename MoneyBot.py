@@ -2,7 +2,7 @@ import nest_asyncio
 nest_asyncio.apply()
 
 import asyncio
-from telegram import Update
+from telegram import Update, ParseMode
 from telegram.ext import ApplicationBuilder,Application, CommandHandler, ContextTypes, MessageHandler, filters
 application = ApplicationBuilder().token("7369038732:AAG1THLHOc6olTeED7_dGne2hIrSvDeOB8M").build()
 
@@ -50,6 +50,31 @@ async def withdraw(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(f"{amount} MNG başarıyla cüzdanınıza aktarıldı.")
     else:
         await update.message.reply_text("Yetersiz bakiye.")
+async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    help_text = (
+        "Geçerli komutlar:\n"
+        "/balance - Mevcut bakiyenizi gösterir.\n"
+        "/refer - Referans kodunuzu paylaşır.\n"
+        "/register - Yeni bir hesap oluşturur.\n"
+        "/withdraw - Para çekme işlemini başlatır."
+    )
+    await update.message.reply_text(help_text, parse_mode=ParseMode.MARKDOWN)
+
+async def balance(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    # Örnek bakiye bilgisi
+    await update.message.reply_text("Mevcut bakiyeniz: 100 MNG")
+
+async def refer(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    # Örnek referans kodu
+    await update.message.reply_text("Referans kodunuz: ABC123")
+
+async def register(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    # Kayıt işlemi
+    await update.message.reply_text("Başarıyla kayıt oldunuz!")
+
+async def withdraw(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    # Para çekme işlemi
+    await update.message.reply_text("Para çekme işlemi başlatıldı. Lütfen talimatları takip edin.")
 # Diğer komutlarınız burada olacak...
 
 # Bilinmeyen komutlar için fallback işleyicisi
