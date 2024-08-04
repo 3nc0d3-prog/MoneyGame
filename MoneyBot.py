@@ -3,7 +3,7 @@ nest_asyncio.apply()
 
 import asyncio
 from telegram import Update
-from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, MessageHandler, filters
+from telegram.ext import ApplicationBuilder,Application, CommandHandler, ContextTypes, MessageHandler, filters
 
 # Kullanıcıların bakiyelerini saklamak için basit bir sözlük
 user_balances = {}
@@ -49,6 +49,16 @@ async def withdraw(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(f"{amount} MNG başarıyla cüzdanınıza aktarıldı.")
     else:
         await update.message.reply_text("Yetersiz bakiye.")
+# Botu başlatan ana fonksiyon
+async def main():
+    application = ApplicationBuilder().token("7369038732:AAG1THLHOc6olTeED7_dGne2hIrSvDeOB8M").build()
+
+    # Komutları ekle
+    application.add_handler(CommandHandler("start", start))
+    application.add_handler(CommandHandler("balance", balance))
+    application.add_handler(CommandHandler("refer", refer))
+    application.add_handler(CommandHandler("register", register))
+    application.add_handler(CommandHandler("withdraw", withdraw))
 # Diğer komutlarınız burada olacak...
 
 # Bilinmeyen komutlar için fallback işleyicisi
@@ -62,16 +72,6 @@ unknown_handler = MessageHandler(filters.COMMAND, unknown_command)
 application.add_handler(unknown_handler)
 
 # Diğer komutlarınızı ve uygulamanızın başlatılmasını ekleyin...
-# Botu başlatan ana fonksiyon
-async def main():
-    application = ApplicationBuilder().token("7369038732:AAG1THLHOc6olTeED7_dGne2hIrSvDeOB8M").build()
-
-    # Komutları ekle
-    application.add_handler(CommandHandler("start", start))
-    application.add_handler(CommandHandler("balance", balance))
-    application.add_handler(CommandHandler("refer", refer))
-    application.add_handler(CommandHandler("register", register))
-    application.add_handler(CommandHandler("withdraw", withdraw))
 
     # Botu başlat
     await application.run_polling()
