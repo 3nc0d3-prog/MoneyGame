@@ -3,7 +3,7 @@ nest_asyncio.apply()
 
 import asyncio
 from telegram import Update
-from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, Application, MessageHandler, filters
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, MessageHandler, filters
 
 # Kullanıcıların bakiyelerini saklamak için basit bir sözlük
 user_balances = {}
